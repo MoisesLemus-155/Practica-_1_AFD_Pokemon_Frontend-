@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import './index.css'
 
-export const PokeNavbar = () => {
+export const PokeNavbar = ({ onFileClick }) => {
     const [isResponsive, setIsResponsive] = useState(false);
 
     const toggleNav = () => {
@@ -16,7 +16,10 @@ export const PokeNavbar = () => {
                 <a className='a-style' href='/'>Home</a>
                 {/* <a className='a-style' href='/Reporte'>Reporte Error</a> */}
                 <Link to="/Reporte" className="a-style">Reporte Error</Link>
-                <a className='a-style' href="/">Archivos</a>
+                <a className='a-style' href="/" onClick={(e) => {
+                    e.preventDefault();
+                    onFileClick();
+                }}>Archivos</a>
                 <a className='a-style' href="/Manuales">Manuales</a>
                 <a className="icon" onClick={toggleNav}>
                     <i className="fa fa-bars icono" />

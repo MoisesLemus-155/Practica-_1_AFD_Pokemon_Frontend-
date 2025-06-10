@@ -7,7 +7,7 @@ export const Reporte = () => {
     return (
         <>
             <PokeNavbar />
-            <div className="container">
+            <div className="container mt-4">
                 <h2>Reporte de Errores</h2>
 
                 {errors.length === 0 ? (
