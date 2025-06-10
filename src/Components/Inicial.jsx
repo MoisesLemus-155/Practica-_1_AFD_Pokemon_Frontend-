@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { pokeData } from "../Api/ApiPokemon"
 import { PokeNavbar } from "./Navbar"
 import { useEditor, useError } from "../context/ErrorContext";
@@ -12,6 +12,18 @@ export const Inicial = () => {
     // const [apiResponse, setApiResponse] = useState('');
     const [tokenList, setTokenList] = useState([])
     const [jugadores, setJugadores] = useState([]);
+    const [pokemonImages, setPokemonImages] = useState({});
+
+    const fetchPokemonImage = async (pokemonName) => {
+        try {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName.toLowerCase()}`);
+            const data = await response.json();
+            return data.sprites.other['official-artwork'].front_default;
+        } catch (error) {
+            console.error(`Error cargando imagen de ${pokemonName}:`, error);
+            return ''; // imagen por defecto si hay error
+        }
+    };
 
     console.log("Tokenlst", tokenList);
     console.log("ErrorList", tokenList.errorList);
@@ -77,6 +89,29 @@ export const Inicial = () => {
         }
     };
 
+    useEffect(() => {
+        const loadPokemonImages = async () => {
+            const imageMap = {};
+
+            for (const jugador of jugadores) {
+                for (const pokemon of jugador.topPokemons) {
+                    const nombre = pokemon.nombre.toLowerCase();
+
+                    if (!imageMap[nombre]) {
+                        const imageUrl = await fetchPokemonImage(nombre);
+                        imageMap[nombre] = imageUrl;
+                    }
+                }
+            }
+
+            setPokemonImages(imageMap);
+        };
+
+        if (jugadores.length > 0) {
+            loadPokemonImages();
+        }
+    }, [jugadores]);
+
     return (
         <>
             <PokeNavbar onFileClick={handleFileClick} />
@@ -128,12 +163,20 @@ export const Inicial = () => {
                                 <div className="row">
                                     {jugador.topPokemons.map((pokemon, pIndex) => (
                                         <div className="col-6 mb-3" key={pIndex}>
-                                            <div className="border rounded p-2 bg-light">
-                                                <strong>{pokemon.nombre}</strong> ({pokemon.tipo})<br />
-                                                Salud: {pokemon.salud}<br />
-                                                Ataque: {pokemon.ataque}<br />
-                                                Defensa: {pokemon.defensa}<br />
-                                                IVs: {pokemon.ivs}%
+                                            <div className="border rounded p-2 bg-light text-center">
+                                                <img
+                                                    src={pokemonImages[pokemon.nombre.toLowerCase()]}
+                                                    alt={pokemon.nombre}
+                                                    style={{ width: '100px', height: '100px' }}
+                                                    className="mb-2"
+                                                />
+                                                <div>
+                                                    <strong>{pokemon.nombre}</strong> ({pokemon.tipo})<br />
+                                                    Salud: {pokemon.salud}<br />
+                                                    Ataque: {pokemon.ataque}<br />
+                                                    Defensa: {pokemon.defensa}<br />
+                                                    IVs: {pokemon.ivs}%
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
