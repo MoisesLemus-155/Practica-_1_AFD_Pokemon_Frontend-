@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 export const Inicial = () => {
 
     const { editorText, setEditorText } = useEditor();
-    // const [apiResponse, setApiResponse] = useState('');
     const [tokenList, setTokenList] = useState([])
     const [jugadores, setJugadores] = useState([]);
     const [pokemonImages, setPokemonImages] = useState({});
@@ -21,12 +20,9 @@ export const Inicial = () => {
             return data.sprites.other['official-artwork'].front_default;
         } catch (error) {
             console.error(`Error cargando imagen de ${pokemonName}:`, error);
-            return ''; // imagen por defecto si hay error
+            return '';
         }
     };
-
-    console.log("Tokenlst", tokenList);
-    console.log("ErrorList", tokenList.errorList);
 
     const { setErrors } = useError();
     const navigate = useNavigate();
@@ -38,51 +34,41 @@ export const Inicial = () => {
     const handleFileLoad = (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
-
         reader.onload = (e) => {
             const content = e.target.result;
-            console.log("📄 Archivo cargado:", content); // Asegúrate de ver esto en la consola
+            console.log("Archivo cargado:", content);
             setEditorText(content);
         };
-
         reader.onerror = (e) => {
-            console.error("❌ Error al leer el archivo:", e);
+            console.error("Error al leer el archivo:", e);
         };
-
         reader.readAsText(file);
     };
+
 
     const handleFileClick = () => {
         document.getElementById("fileInput").click();
     };
 
+
     const handlePokeData = async () => {
         const result = await pokeData(editorText);
-
         if (result) {
             const errores = result.errors || [];
-
             setErrors(errores);
-
             if (errores.length > 0) {
-                // Si hay errores, no actualices tokens ni jugadores
                 setTokenList([]);
                 setJugadores([]);
-
                 Swal.fire({
                     icon: 'error',
                     title: 'Errores detectados',
                     text: 'Se detectaron errores. Puedes verlos en la sección de Reporte.',
                     confirmButtonText: 'OK'
-
                 }).then(() => {
-                    // Redirigir al reporte de errores
                     navigate('/Reporte');
                 });
             } else {
-                // Solo si NO hay errores, actualizamos los datos
                 setTokenList(result.tokens || []);
                 setJugadores(result.jugadores || []);
             }
@@ -92,30 +78,26 @@ export const Inicial = () => {
     useEffect(() => {
         const loadPokemonImages = async () => {
             const imageMap = {};
-
             for (const jugador of jugadores) {
                 for (const pokemon of jugador.topPokemons) {
                     const nombre = pokemon.nombre.toLowerCase();
-
                     if (!imageMap[nombre]) {
                         const imageUrl = await fetchPokemonImage(nombre);
                         imageMap[nombre] = imageUrl;
                     }
                 }
             }
-
             setPokemonImages(imageMap);
         };
-
         if (jugadores.length > 0) {
             loadPokemonImages();
         }
     }, [jugadores]);
 
+
     return (
         <>
             <PokeNavbar onFileClick={handleFileClick} />
-
             <div className="container">
                 <div className="row">
                     <div className="col-lg-6 col-md-6 col-sm-12 col-token">

@@ -3,16 +3,12 @@ import { PokeNavbar } from './Navbar';
 
 export const Reporte = () => {
     const { errors } = useError();
-
     return (
         <>
             <PokeNavbar />
             <div className="container mt-4">
                 <h2>Reporte de Errores</h2>
-
-                {errors.length === 0 ? (
-                    <p>No se encontraron errores.</p>
-                ) : (
+                {errors.length === 0 ? (<p>No se encontraron errores.</p>) : (
                     <table className="table">
                         <thead>
                             <tr>

@@ -14,7 +14,6 @@ export const PokeNavbar = ({ onFileClick }) => {
             <ul className="nav nav-pills">
                 <a className="a-style active">Poke Ayuda</a>
                 <a className='a-style' href='/'>Home</a>
-                {/* <a className='a-style' href='/Reporte'>Reporte Error</a> */}
                 <Link to="/Reporte" className="a-style">Reporte Error</Link>
                 <a className='a-style' href="/" onClick={(e) => {
                     e.preventDefault();
